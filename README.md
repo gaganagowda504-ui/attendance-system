@@ -31,12 +31,11 @@ A Machine Learning web application that detects faces through webcam and automat
 ## 🚀 Live Links
 
 ### 🔹 Frontend (React)
-attendance-system-l28wjmef3-gaganagowda504-uis-projects.vercel.app
-
-### 🔹 Backend (Flask API - Render)
 https://attendance-system-l28wjmef3-gaganagowda504-uis-projects.vercel.app/
 
----
+### 🔹 Backend (Flask API - Render)
+
+https://attendance-system-backend-mcz8.onrender.com
 
 ## 📁 Project Repository
 
