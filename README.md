@@ -46,5 +46,5 @@ https://github.com/gaganagowda504-ui/attendance-system
 
 ##  Developed By
 
-**Gagana Gowda**
+**Gagana S**
 
