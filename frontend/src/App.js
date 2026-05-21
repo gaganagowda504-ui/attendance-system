@@ -5,7 +5,6 @@ import { useRef, useState } from "react";
 import axios from "axios";
 
 function App() {
-
   const webcamRef = useRef(null);
 
   const [name, setName] = useState("");
@@ -14,71 +13,81 @@ function App() {
     JSON.parse(localStorage.getItem("attendance")) || []
   );
 
+  // ✅ IMPORTANT: PUT YOUR REAL RENDER LINK HERE
+  const API = "https://YOUR-BACKEND-RENDER-URL.onrender.com";
+
   const capture = async () => {
-
-    const imageSrc = webcamRef.current.getScreenshot();
-
-    const response = await axios.post(
-      "http://127.0.0.1:5000/upload",
-      {
-        image: imageSrc,
-        name: name
+    try {
+      if (!name) {
+        alert("Please enter name");
+        return;
       }
-    );
 
-    const currentDate = new Date().toLocaleDateString();
+      const imageSrc = webcamRef.current?.getScreenshot();
 
-   const currentTime = new Date().toLocaleTimeString([], {
-  hour: '2-digit',
-  minute: '2-digit'
-});
+      if (!imageSrc) {
+        alert("Camera not ready. Allow permission.");
+        return;
+      }
 
-    if (response.data.message.includes("Attendance Marked")) {
+      console.log("Sending request to backend...");
 
-      const newAttendance = {
-        name: name,
-        date: currentDate,
-        time: currentTime
-      };
-
-      const updatedAttendance = [
-        ...attendanceData,
-        newAttendance
-      ];
-
-      setAttendanceData(updatedAttendance);
-
-      localStorage.setItem(
-        "attendance",
-        JSON.stringify(updatedAttendance)
+      const response = await axios.post(
+        `${API}/upload`,
+        {
+          image: imageSrc,
+          name: name,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
+
+      const currentDate = new Date().toLocaleDateString();
+
+      const currentTime = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      if (response.data.message.includes("Attendance Marked")) {
+        const newAttendance = {
+          name: name,
+          date: currentDate,
+          time: currentTime,
+        };
+
+        const updated = [...attendanceData, newAttendance];
+
+        setAttendanceData(updated);
+        localStorage.setItem("attendance", JSON.stringify(updated));
+      }
+
+      alert(response.data.message);
+      setName("");
+    } catch (error) {
+      console.log("Backend Error:", error.message);
+      alert("Backend not reachable. Check Render URL or server.");
     }
-
-    alert(response.data.message);
-
-    setName("");
   };
 
   return (
     <div className="container">
-
       <h1>Attendance Monitoring System</h1>
 
-      {/* INPUT */}
       <input
         type="text"
         placeholder="Enter Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        style={{
-          padding: "10px",
-          fontSize: "18px"
-        }}
+        style={{ padding: "10px", fontSize: "18px" }}
       />
 
-      <br /><br />
+      <br />
+      <br />
 
-      {/* WEBCAM */}
       <Webcam
         audio={false}
         ref={webcamRef}
@@ -86,32 +95,17 @@ function App() {
         width={400}
       />
 
-      <br /><br />
+      <br />
+      <br />
 
-      {/* BUTTON */}
-      <button
-        className="button"
-        onClick={capture}
-        style={{
-          padding: "10px",
-          fontSize: "18px"
-        }}
-      >
+      <button className="button" onClick={capture} type="button">
         Mark Attendance
       </button>
 
-      <br /><br />
+      <br />
+      <br />
 
-      {/* TABLE */}
-      <table
-        className="table"
-        border="1"
-        cellPadding="10"
-        style={{
-          borderCollapse: "collapse",
-          fontSize: "18px"
-        }}
-      >
+      <table border="1" cellPadding="10">
         <thead>
           <tr>
             <th>Name</th>
@@ -129,23 +123,13 @@ function App() {
             </tr>
           ))}
         </tbody>
-
       </table>
 
       <br />
 
-      {/* DOWNLOAD CSV */}
-      <CSVLink
-        data={attendanceData}
-        filename={"attendance.csv"}
-      >
-
-        <button className="button">
-          Download Attendance CSV
-        </button>
-
+      <CSVLink data={attendanceData} filename={"attendance.csv"}>
+        <button className="button">Download CSV</button>
       </CSVLink>
-
     </div>
   );
 }
