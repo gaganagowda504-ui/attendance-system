@@ -14,7 +14,7 @@ function App() {
   );
 
   // ✅ IMPORTANT: PUT YOUR REAL RENDER LINK HERE
-  const API = "https://YOUR-BACKEND-RENDER-URL.onrender.com";
+  const API = "https://attendance-system-backend-mcz8.onrender.com";
 
   const capture = async () => {
     try {
